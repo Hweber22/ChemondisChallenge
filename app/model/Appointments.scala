@@ -6,7 +6,7 @@ case class Appointments(persons: List[Person], possibleDates: List[Timeslot])
 
 object Appointments {
 
-  val entireWeek = Timespan.spansToSlots(List(Timespan("Mo", 0, 24), Timespan("Tu", 0, 24), Timespan("We", 0, 24), Timespan("Th", 0, 24), Timespan("Fr", 0, 24), Timespan("Sa", 0, 24), Timespan("Su", 0, 24)))
+  val entireWeek = Timespan.spansToSlots(List(Timespan("Monday", 0, 24), Timespan("Tuesday", 0, 24), Timespan("Wednesday", 0, 24), Timespan("Thursday", 0, 24), Timespan("Friday", 0, 24), Timespan("Saturday", 0, 24), Timespan("Sunday", 0, 24)))
   def commonSlots(slotlists: List[List[Timeslot]], acc: List[Timeslot]): List[Timeslot] = slotlists match {
     case Nil => Nil
     case List(slots) => slots.filter(slot => acc.contains(slot))
