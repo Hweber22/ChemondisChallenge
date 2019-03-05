@@ -6,7 +6,7 @@ case class Appointments(persons: List[Person], possibleDates: List[Timeslot])
 
 object Appointments {
 
-  val entireWeek = Timespan.spansToSlots(List(Timespan("Mo", 7, 19), Timespan("Tu", 7, 19), Timespan("We", 7, 19), Timespan("Th", 7, 19), Timespan("Fr", 7, 19)))
+  val entireWeek = Timespan.spansToSlots(List(Timespan("Mo", 0, 24), Timespan("Tu", 0, 24), Timespan("We", 0, 24), Timespan("Th", 0, 24), Timespan("Fr", 0, 24), Timespan("Sa", 0, 24), Timespan("Su", 0, 24)))
   def commonSlots(slotlists: List[List[Timeslot]], acc: List[Timeslot]): List[Timeslot] = slotlists match {
     case Nil => Nil
     case List(slots) => slots.filter(slot => acc.contains(slot))
@@ -20,11 +20,13 @@ object Appointments {
       val slots = commonSlots(persons.map { person => person.availableSlots }, entireWeek)
       Right(Appointments(persons, slots))
     }
-    else Left("Cannot make an appointment due to wrong number of Candidates or Interviewers")
+    else Left("must be one candidate and one or more interviewers")
   }
 }
 
 object AppointmentsFormat {
+  import TimeslotFormat._
+  import PersonFormat._
 
   implicit val appointmentsFormat = Json.format[Appointments]
 

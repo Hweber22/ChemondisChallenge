@@ -1,0 +1,2 @@
+PUT /freeTimeslots/:name/:typ          controllers.AppointmentController.setFreeTimeslots(name, typ)
+GET /appointments/:persons             controllers.AppointmentController.appointments(persons: List[String])
