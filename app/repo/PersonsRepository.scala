@@ -6,16 +6,16 @@ import model._
 import scala.concurrent.{ExecutionContext, Future}
 
 trait PersonsRepository {
-  def setFreeTimeslots(name: String, typ: String, timeslots: List[Timeslot]): Future[Unit]
+  def setFreeTimeslots(typ: String, name: String, timeslots: List[Timeslot]): Future[Unit]
   def addedPersons: Future[List[Person]]
 }
 
 class PersonsRepositoryImpl @Inject()(implicit ec: ExecutionContext) extends PersonsRepository {
   var persons = List[Person]()
 
-  override def setFreeTimeslots(name: String, typ: String, timeslots: List[Timeslot])=
+  override def setFreeTimeslots(typ: String, name: String, timeslots: List[Timeslot])=
     Future.successful {
-      val personWithTimeslots = Person(name, typ, timeslots)
+      val personWithTimeslots = Person(typ, name, timeslots)
       persons = persons ++ List(personWithTimeslots)
     }
 

@@ -1,2 +1,2 @@
-PUT /freeTimeslots/:name/:typ          controllers.AppointmentController.setFreeTimeslots(name: String, typ: String)
-GET /appointments             controllers.AppointmentController.appointments(persons: List[String])
+PUT /freeTimeslots/:typ/:name          controllers.AppointmentController.setFreeTimeslots(typ: String, name: String)
+GET /appointments                      controllers.AppointmentController.appointments(persons: List[String])

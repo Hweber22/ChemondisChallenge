@@ -2,7 +2,7 @@ package model
 
 import play.api.libs.json.{JsValue, Json}
 
-case class Person(name: String, typ: String, availableSlots: List[Timeslot])
+case class Person(typ: String, name: String, availableSlots: List[Timeslot])
 
 object PersonFormat {
   import model.TimeslotFormat._

@@ -12,11 +12,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AppointmentController @Inject()(personsRepo: PersonsRepository)(implicit ec: ExecutionContext) extends InjectedController {
 
-  def setFreeTimeslots(name: String, typ: String) = Action(parse.json).async { implicit request =>
+  def setFreeTimeslots(typ: String, name: String) = Action(parse.json).async { implicit request =>
     Json.fromJson[List[Timeslot]](request.body) match {
       case JsSuccess(slots, _) =>
 
-        personsRepo.setFreeTimeslots(name, typ, slots).map { _ =>
+        personsRepo.setFreeTimeslots(typ, name, slots).map { _ =>
           Ok(Json.toJson(s"Timeslots saved for '$name' [$typ]"))
         }
 

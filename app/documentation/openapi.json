@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Interview Api",
+    "description": "describes the route my Interview API from the Chemondis Coding Challenge has implemented",
+    "version": "0.0.1",
+    "contact": {
+      "email": "henningweber@hotmail.de"
+    }
+  },
+  "paths": {
+    "/freeTimeslots/{typ}/{name}": {
+      "put": {
+        "summary": "A person, interviewer or candidate, puts their free Timeslots to the repository",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Typ"
+          },
+          {
+            "$ref": "#/components/parameters/Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully saved the specified times"
+          },
+          "400": {
+            "description": "The given input cannot be serialized or deserialized into a List of Timeslots"
+          }
+        }
+      }
+    },
+    "/appointments": {
+      "get": {
+        "summary": "Get possible appointments for a candidate and a group of interviewers",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Persons"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully finished searching for appointments. The list of persons you entered was valid (1 candidate and at least 1 interviewer). Remember that the list of possible Appointments might be empty."
+          },
+          "400": {
+            "description": "The list of persons given cannot constitute a sensible job interview"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "Typ": {
+        "required": true,
+        "name": "typ",
+        "in": "path",
+        "description": "Every person as a typ. It should be either Candidate or Interviewer(everything else gets filtered)",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Name": {
+        "required": true,
+        "name": "name",
+        "in": "path",
+        "description": "The name of a person",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Persons": {
+        "required": true,
+        "name": "persons",
+        "in": "query",
+        "description": "A list of names of persons",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Person": {
+        "type": "object",
+        "properties": {
+          "typ": {
+            "type": "string",
+            "description": "Type of the person",
+            "enum": [
+              "Candidate",
+              "Interviewer"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "example": "Henning",
+            "description": "The persons name"
+          },
+          "availableSlots": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Timeslot"
+            }
+          }
+        },
+        "required": [
+          "typ",
+          "name",
+          "availableSlots"
+        ]
+      },
+      "Timeslot": {
+        "type": "object",
+        "properties": {
+          "weekday": {
+            "type": "string",
+            "description": "Just any weekday",
+            "enum": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ]
+          },
+          "startingTime": {
+            "type": "integer",
+            "example": 8,
+            "description": "This represents the starting Point of a 1 hour slot. E.g. 8 stands for the slot from 8am to 9am. We use a 24 hour format"
+          }
+        },
+        "required": [
+          "weekday",
+          "startingTime"
+        ]
+      },
+      "Appointments": {
+        "type": "object",
+        "properties": {
+          "persons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Person"
+            },
+            "description": "A list of Persons, who were looking to find matching timeslots for",
+            "example": [
+              "Philipp",
+              "Sarah",
+              "Carl"
+            ]
+          },
+          "possibleDates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Timeslot"
+            },
+            "description": "A list of dates, where all queried persons can meet",
+            "example": [
+              "Timeslot(Monday",
+              "13)",
+              "Timeslot(Thursday",
+              "16)"
+            ]
+          }
+        },
+        "required": [
+          "persons",
+          "possibleDates"
+        ]
+      }
+    }
+  }
+}
