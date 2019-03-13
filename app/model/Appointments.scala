@@ -2,31 +2,39 @@ package model
 
 import play.api.libs.json.{JsValue, Json}
 
-case class Appointments(persons: List[Person], possibleDates: List[Timeslot])
+case class Appointments(candidate: Candidate, interviewers: List[Interviewer], possibleDates: List[Timeslot])
 
 object Appointments {
 
-  val entireWeek = Timespan.spansToSlots(List(Timespan("Monday", 0, 24), Timespan("Tuesday", 0, 24), Timespan("Wednesday", 0, 24), Timespan("Thursday", 0, 24), Timespan("Friday", 0, 24), Timespan("Saturday", 0, 24), Timespan("Sunday", 0, 24)))
-  def commonSlots(slotlists: List[List[Timeslot]], acc: List[Timeslot]): List[Timeslot] = slotlists match {
-    case Nil => Nil
-    case List(slots) => slots.filter(slot => acc.contains(slot))
-    case x :: xs => commonSlots(xs, x.filter(slot => acc.contains(slot)))
+  def commonSlots(slotlists: List[List[Timeslot]], acc: List[Timeslot]): List[Timeslot] = {
+    slotlists match {
+      case Nil => Nil
+      case List(slots) => slots.filter(slot => acc.contains(slot))
+      case x :: xs => commonSlots(xs, x.filter(slot => acc.contains(slot)))
+    }
   }
 
-  def possibleAppointments(persons: List[Person]): Either[String, Appointments] = {
-    val candidates = persons.filter(p => p.typ == "Candidate")
-    val interviewers = persons.filter(p => p.typ == "Interviewer")
-    if(candidates.length == 1 && interviewers.nonEmpty) {
-      val slots = commonSlots(persons.map { person => person.availableSlots }, entireWeek)
-      Right(Appointments(persons, slots))
+  def possibleAppointments(persons: Map[Person, List[Timeslot]]): Either[String, Appointments] = {
+    val personList = persons.keys.toList
+    val candidates: List[Candidate] = personList.collect {
+      case p: Candidate => p
+    }
+    val interviewers: List[Interviewer] = personList.collect {
+      case p: Interviewer => p
+    }
+    if (candidates.length == 1 && interviewers.nonEmpty) {
+      val slots = commonSlots(persons.values.toList, persons(candidates.head))
+      Right(Appointments(candidates.head, interviewers, slots))
     }
     else Left("must be one candidate and one or more interviewers")
   }
 }
 
 object AppointmentsFormat {
+
   import TimeslotFormat._
-  import PersonFormat._
+  import model.CandidateFormat._
+  import model.InterviewerFormat._
 
   implicit val appointmentsFormat = Json.format[Appointments]
 

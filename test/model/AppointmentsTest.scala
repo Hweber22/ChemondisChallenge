@@ -1,18 +1,20 @@
 package model
 
+import java.util.UUID
+
 import org.scalatest.{FlatSpec, Matchers}
 
 class AppointmentsTest extends FlatSpec with Matchers {
 
   "Appointments" should "serialize to Json and the Json should deserialize to Appointments" in {
     import model.AppointmentsFormat._
-    import model.PersonFormat._
+    import model.InterviewerFormat._
+    import model.CandidateFormat._
     import model.TimeslotFormat._
 
     val appointments = Appointments(
-      persons = List(
-        Person("Henning", "Candidate", List(Timeslot("Monday", 10)))
-      ),
+      candidate = Candidate(UUID.randomUUID(), "Henning"),
+      interviewers = List.empty,
       possibleDates = List(
         Timeslot("Monday", 10)
       )
@@ -43,46 +45,49 @@ class AppointmentsTest extends FlatSpec with Matchers {
 
   it should "not work when no interviewer is present" in {
 
-    val persons = List(
-      Person("Henning", "Candidate", List(Timeslot("Monday", 10))),
-      Person("Erika", "Candidate", List(Timeslot("Monday", 10)))
-    )
+    val henning = Candidate(UUID.randomUUID(), "Henning")
+    val erika = Candidate(UUID.randomUUID(), "Erika")
+    val henningsSlots = List(Timeslot("Monday", 10))
+    val erikasSlots = List(Timeslot("Monday", 10))
 
-    Appointments.possibleAppointments(persons) should equal(Left("must be one candidate and one or more interviewers"))
+    val personMap: Map[Person, List[Timeslot]] = Map(henning -> henningsSlots, erika -> erikasSlots)
+    Appointments.possibleAppointments(personMap) should equal(Left("must be one candidate and one or more interviewers"))
   }
 
   it should "find appointments for a candidate and multiple interviewers" in {
 
-    val carl = Person("Carl", "Candidate",
-      Timespan.spansToSlots(
+    val carl = Candidate(UUID.randomUUID(), "Carl")
+
+    val carlsSlots = Timespan.spansToSlots(
         List(Timespan("Monday", 9, 10),
           Timespan("Tuesday", 9, 10),
           Timespan("Wednesday", 9, 12),
           Timespan("Thursday", 9, 10),
           Timespan("Friday", 9, 10)
         ))
-    )
-    val philipp = Person("Philipp", "Interviewer",
-      Timespan.spansToSlots(
+
+    val philipp = Interviewer(UUID.randomUUID(), "Philipp")
+
+    val philippsSlots = Timespan.spansToSlots(
         List(Timespan("Monday", 9, 16),
           Timespan("Tuesday", 9, 16),
           Timespan("Wednesday", 9, 16),
           Timespan("Thursday", 9, 16),
           Timespan("Friday", 9, 16)
         ))
-    )
-    val sarah = Person("Sarah", "Interviewer",
-      Timespan.spansToSlots(
+
+    val sarah = Interviewer(UUID.randomUUID(), "Sarah")
+
+    val sarahsSlots = Timespan.spansToSlots(
         List(Timespan("Monday", 12, 18),
           Timespan("Tuesday", 9, 12),
           Timespan("Wednesday", 12, 18),
           Timespan("Thursday", 9, 12)
         ))
-    )
 
-    val persons = List(carl, philipp, sarah)
+    val personMap: Map[Person, List[Timeslot]] = Map(carl -> carlsSlots, philipp -> philippsSlots, sarah -> sarahsSlots)
 
-    Appointments.possibleAppointments(persons) should equal(Right(Appointments(persons, List(Timeslot("Tuesday", 9), Timeslot("Thursday", 9)))))
+    Appointments.possibleAppointments(personMap) should equal(Right(Appointments(carl, List(philipp, sarah) , List(Timeslot("Tuesday", 9), Timeslot("Thursday", 9)))))
 
   }
 }

@@ -1,2 +1,6 @@
-PUT /freeTimeslots/:typ/:name          controllers.AppointmentController.setFreeTimeslots(typ: String, name: String)
-GET /appointments                      controllers.AppointmentController.appointments(persons: List[String])
+PUT /candidate/:name                   controllers.AppointmentController.createCandidate(name: String)
+PUT /interviewer/:name                 controllers.AppointmentController.createInterviewer(name: String)
+PUT /freeTimeslots/:id                 controllers.AppointmentController.setFreeTimeslots(id: String)
+GET /appointments                      controllers.AppointmentController.appointments(id: List[String])
+GET /allCandidates                     controllers.AppointmentController.allCandidates
+GET /allInterviewers                   controllers.AppointmentController.allInterviewers
