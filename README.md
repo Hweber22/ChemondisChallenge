@@ -14,4 +14,5 @@ The program is written in Scala. To try the program locally , build a docker ima
 
 ## GET possible appointments for a list of persons:
 
-   `curl -XGET http://localhost:9000/appointments?persons=philipp,carl`
+   `curl -XGET http://localhost:9000/appointments?persons=philipp&persons=carl&persons=sarah`
+     
